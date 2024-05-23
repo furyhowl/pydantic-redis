@@ -25,10 +25,10 @@ class Store(AbstractStore):
     with a `Store` that is connected to that database.
 
     Attributes:
-        models (Dict[str, Type[pydantic_redis.syncio.Model]]): a mapping of registered `Model`'s, with the keys being the
+        models (Dict[str, Type[pydantic_redis.asyncio.Model]]): a mapping of registered `Model`'s, with the keys being the
             Model name
         name (str): the name of this Store
-        redis_config (pydantic_redis.syncio.RedisConfig): the configuration for connecting to a redis database
+        redis_config (pydantic_redis.asyncio.RedisConfig): the configuration for connecting to a redis database
         redis_store (Optional[redis.Redis]): an Redis instance associated with this store (default: None)
         life_span_in_seconds (Optional[int]): the default time-to-live for the records inserted in this store
             (default: None)

@@ -39,7 +39,7 @@ class Store(AbstractStore):
     def _connect_to_redis(self) -> redis.Redis:
         """Connects the store to redis.
 
-        See base class.
+        See the base class.
         """
         return redis.from_url(
             self.redis_config.redis_url,

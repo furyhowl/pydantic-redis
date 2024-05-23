@@ -13,7 +13,7 @@ above classes
 """
 
 from pydantic_redis.syncio import Store, Model, RedisConfig
-import pydantic_redis.asyncio
+import pydantic_redis.asyncio as asyncio
 
 __all__ = [Store, RedisConfig, Model, asyncio]
 

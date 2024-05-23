@@ -132,7 +132,7 @@ class Model(AbstractModel):
         skip: int = 0,
         limit: Optional[int] = None,
         **kwargs,
-    ) -> Union["Model", Dict[str, Any]]:
+    ) -> Union[list["Model"], list[Dict[str, Any]]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
@@ -185,5 +185,50 @@ class Model(AbstractModel):
             model=cls, response=response, as_models=(columns is None)
         )
 
+    @classmethod
+    async def first(
+        cls,
+        id: Any,
+        columns: Optional[List[str]] = None,
+        **kwargs,
+    ) -> Union[list["Model"], list[Dict[str, Any]]]:
+        """Retrieves records of this Model from redis.
+
+        Retrieves the records for this Model from redis.
+
+        Args:
+            columns: the fields to return for each record
+            id: the primary keys of the records to returns
+            skip: the number of records to skip. (default: 0)
+            limit: the maximum number of records to return
+
+        Returns:
+            By default, it returns all records that belong to current Model.
+
+            If `id` are specified, it returns only records whose primary keys
+            have been listed in `id`.
+
+            If `skip` and `limit` are specified WITHOUT `id`, a slice of
+            all records are returned.
+
+            If `limit` and `id` are specified, `limit` is ignored.
+
+            If `columns` are specified, a list of dictionaries containing only
+            the fields specified in `columns` is returned. Otherwise, instances
+            of the current Model are returned.
+        """
+        if columns is None:
+            response = await select_all_fields_some_ids(model=cls, ids=[id])
+        elif isinstance(columns, list):
+            response = await select_some_fields_some_ids(model=cls, fields=columns, ids=[id])
+
+        else:
+            raise ValueError(
+                f"columns {columns} should be either None or lists"
+            )
+
+        return parse_select_response(
+            model=cls, response=response, as_models=(columns is None)
+        )[0]
 
 Store.model_rebuild()
