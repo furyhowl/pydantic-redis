@@ -128,7 +128,7 @@ class Model(AbstractModel):
         skip: int = 0,
         limit: Optional[int] = None,
         **kwargs,
-    ) -> Union[List["Model"], List[Dict[str, Any]]]:
+    ):
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
