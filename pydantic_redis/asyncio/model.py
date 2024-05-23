@@ -3,20 +3,16 @@
 This module contains the `Model` class which should be inherited when
 creating model's for use in the asynchronous API of pydantic-redis.
 """
-from typing import Optional, List, Any, Union, Dict
+from typing import Any, Dict, List, Optional, Union
 
-from .._shared.model import AbstractModel
-from .._shared.model.insert_utils import insert_on_pipeline
-from .._shared.model.select_utils import (
-    select_all_fields_all_ids,
-    select_all_fields_some_ids,
-    select_some_fields_all_ids,
-    select_some_fields_some_ids,
-    parse_select_response,
-)
-
-from .store import Store
-from .._shared.model.delete_utils import delete_on_pipeline
+from pydantic_redis._shared.model import AbstractModel
+from pydantic_redis._shared.model.delete_utils import delete_on_pipeline
+from pydantic_redis._shared.model.insert_utils import insert_on_pipeline
+from pydantic_redis._shared.model.select_utils import (
+    parse_select_response, select_all_fields_all_ids,
+    select_all_fields_some_ids, select_some_fields_all_ids,
+    select_some_fields_some_ids)
+from pydantic_redis.asyncio.store import Store
 
 
 class Model(AbstractModel):
@@ -132,7 +128,7 @@ class Model(AbstractModel):
         skip: int = 0,
         limit: Optional[int] = None,
         **kwargs,
-    ) -> Union[list["Model"], list[Dict[str, Any]]]:
+    ) -> Union[List["Model"], List[Dict[str, Any]]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
@@ -191,16 +187,14 @@ class Model(AbstractModel):
         id: Any,
         columns: Optional[List[str]] = None,
         **kwargs,
-    ) -> Union[list["Model"], list[Dict[str, Any]]]:
+    ) -> Union["Model", Dict[str, Any]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
 
         Args:
-            columns: the fields to return for each record
             id: the primary keys of the records to returns
-            skip: the number of records to skip. (default: 0)
-            limit: the maximum number of records to return
+            columns: the fields to return for each record
 
         Returns:
             By default, it returns all records that belong to current Model.

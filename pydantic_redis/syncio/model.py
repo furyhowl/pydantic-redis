@@ -128,7 +128,7 @@ class Model(AbstractModel):
         skip: int = 0,
         limit: Optional[int] = None,
         **kwargs,
-    ) -> Union[list["Model"], list[Dict[str, Any]]]:
+    ) -> Union[List["Model"], List[Dict[str, Any]]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
@@ -183,16 +183,14 @@ class Model(AbstractModel):
         id: Any,
         columns: Optional[List[str]] = None,
         **kwargs,
-    ) -> Union[list["Model"], list[Dict[str, Any]]]:
+    ) -> Union["Model", Dict[str, Any]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
 
         Args:
-            columns: the fields to return for each record
             id: the primary keys of the records to returns
-            skip: the number of records to skip. (default: 0)
-            limit: the maximum number of records to return
+            columns: the fields to return for each record
 
         Returns:
             By default, it returns all records that belong to current Model.
