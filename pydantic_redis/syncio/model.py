@@ -3,15 +3,19 @@
 This module contains the `Model` class which should be inherited when
 creating model's for use in the synchronous API of pydantic-redis
 """
+
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic_redis._shared.model import AbstractModel
 from pydantic_redis._shared.model.delete_utils import delete_on_pipeline
 from pydantic_redis._shared.model.insert_utils import insert_on_pipeline
 from pydantic_redis._shared.model.select_utils import (
-    parse_select_response, select_all_fields_all_ids,
-    select_all_fields_some_ids, select_some_fields_all_ids,
-    select_some_fields_some_ids)
+    parse_select_response,
+    select_all_fields_all_ids,
+    select_all_fields_some_ids,
+    select_some_fields_all_ids,
+    select_some_fields_some_ids,
+)
 from pydantic_redis.syncio.store import Store
 
 
@@ -47,11 +51,7 @@ class Model(AbstractModel):
         """
         store = cls.get_store()
 
-        life_span = (
-            life_span_seconds
-            if life_span_seconds is not None
-            else store.life_span_in_seconds
-        )
+        life_span = life_span_seconds if life_span_seconds is not None else store.life_span_in_seconds
         with store.redis_store.pipeline(transaction=True) as pipeline:
             data_list = []
 
@@ -72,9 +72,7 @@ class Model(AbstractModel):
             return pipeline.execute()
 
     @classmethod
-    def update(
-        cls, _id: Any, data: Dict[str, Any], life_span_seconds: Optional[float] = None
-    ):
+    def update(cls, _id: Any, data: Dict[str, Any], life_span_seconds: Optional[float] = None):
         """Updates the record whose primary key is `_id`.
 
         Updates the record of this Model in redis whose primary key is equal to the `_id` provided.
@@ -88,11 +86,7 @@ class Model(AbstractModel):
             life_span_seconds: the new time-to-live for the record
         """
         store = cls.get_store()
-        life_span = (
-            life_span_seconds
-            if life_span_seconds is not None
-            else store.life_span_in_seconds
-        )
+        life_span = life_span_seconds if life_span_seconds is not None else store.life_span_in_seconds
         with store.redis_store.pipeline(transaction=True) as pipeline:
             if isinstance(data, dict):
                 insert_on_pipeline(
@@ -128,7 +122,7 @@ class Model(AbstractModel):
         skip: int = 0,
         limit: Optional[int] = None,
         **kwargs,
-    ):
+    ) -> List[Union["Model", Dict[str, Any]]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
@@ -161,21 +155,15 @@ class Model(AbstractModel):
             response = select_all_fields_some_ids(model=cls, ids=ids)
 
         elif isinstance(columns, list) and ids is None:
-            response = select_some_fields_all_ids(
-                model=cls, fields=columns, skip=skip, limit=limit
-            )
+            response = select_some_fields_all_ids(model=cls, fields=columns, skip=skip, limit=limit)
 
         elif isinstance(columns, list) and isinstance(ids, list):
             response = select_some_fields_some_ids(model=cls, fields=columns, ids=ids)
 
         else:
-            raise ValueError(
-                f"columns {columns}, ids: {ids} should be either None or lists"
-            )
+            raise ValueError(f"columns {columns}, ids: {ids} should be either None or lists")
 
-        return parse_select_response(
-            model=cls, response=response, as_models=(columns is None)
-        )
+        return parse_select_response(model=cls, response=response, as_models=(columns is None))
 
     @classmethod
     def first(
@@ -209,21 +197,19 @@ class Model(AbstractModel):
         """
         if columns is None:
             response = select_all_fields_some_ids(model=cls, ids=[id])
+
         elif isinstance(columns, list):
             response = select_some_fields_some_ids(model=cls, fields=columns, ids=[id])
 
         else:
-            raise ValueError(
-                f"columns {columns} should be either None or lists"
-            )
+            raise ValueError(f"columns {columns} should be either None or lists")
 
-        result = parse_select_response(
-            model=cls, response=response, as_models=(columns is None)
-        )
-        
+        result = parse_select_response(model=cls, response=response, as_models=(columns is None))
+
         if result is None:
             return None
 
         return result[0]
+
 
 Store.model_rebuild()
