@@ -227,8 +227,13 @@ class Model(AbstractModel):
                 f"columns {columns} should be either None or lists"
             )
 
-        return parse_select_response(
+        result = parse_select_response(
             model=cls, response=response, as_models=(columns is None)
-        )[0]
+        )
+        
+        if result is None:
+            return None
+
+        return result[0]
 
 Store.model_rebuild()
