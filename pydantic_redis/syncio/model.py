@@ -4,7 +4,9 @@ This module contains the `Model` class which should be inherited when
 creating model's for use in the synchronous API of pydantic-redis
 """
 
-from typing import Any, Dict, List, Optional, Self, Union
+from typing import Any, Dict, List, Optional, Union
+
+from typing_extensions import Self
 
 from pydantic_redis._shared.model import AbstractModel
 from pydantic_redis._shared.model.delete_utils import delete_on_pipeline
@@ -17,6 +19,7 @@ from pydantic_redis._shared.model.select_utils import (
     select_some_fields_some_ids,
 )
 from pydantic_redis.syncio.store import Store
+
 
 class Model(AbstractModel):
     """
@@ -71,7 +74,12 @@ class Model(AbstractModel):
             return pipeline.execute()
 
     @classmethod
-    def update(cls, _id: Any, data: Dict[str, Any], life_span_seconds: Optional[float] = None):
+    def update(
+        cls,
+        _id: Any,
+        data: Dict[str, Any],
+        life_span_seconds: Optional[float] = None,
+    ):
         """Updates the record whose primary key is `_id`.
 
         Updates the record of this Model in redis whose primary key is equal to the `_id` provided.
@@ -170,7 +178,7 @@ class Model(AbstractModel):
         id: Any,
         columns: Optional[List[str]] = None,
         **kwargs,
-    ) -> Union["Model", Dict[str, Any]]:
+    ) -> Union[Self, Dict[str, Any]]:
         """Retrieves records of this Model from redis.
 
         Retrieves the records for this Model from redis.
